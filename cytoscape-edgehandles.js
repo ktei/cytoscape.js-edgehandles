@@ -1,4 +1,4 @@
-;(function( $$, $ ){ 'use strict';
+;(function( $ ){ 'use strict';
 
   // registers the extension on a cytoscape lib ref
   var register = function( $$, $ ){
@@ -39,6 +39,10 @@
       },
       start: function( sourceNode ){
         // fired when edgehandles interaction starts (drag on handle)
+      },
+      finishing: function( sourceNode, targetNode, creatingEdge ){
+        // CUSTOM!
+        //Fired just before the edge is created and cytoscape updates.
       },
       complete: function( sourceNode, targetNodes, addedEntities ){
         // fired when edgehandles is done and entities are added
@@ -137,6 +141,8 @@
           $container.append( $canvas );
 
           function sizeCanvas(){
+            //Without the return, this creates a canvas over the top of all DOM elements.
+            return;
             $canvas
               .attr('height', $container.height())
               .attr('width', $container.width())
@@ -312,6 +318,8 @@
                   classes: 'edgehandles-ghost edgehandles-ghost-node',
                   css: {
                     'background-color': 'blue',
+                     //Set the background image so that it does not conflict with the Stylesheet.js CSS
+                    'background-image': '/Images/Reveal/node-person.png',
                     'width': 0.0001,
                     'height': 0.0001,
                     'opacity': 0
@@ -445,7 +453,7 @@
                 }, options().edgeParams(source, target, 0) )).addClass(classes);
                 
                 var inter2target = cy.add($.extend( true, {
-                  group: 'edges',
+                  group: 'edges',                  
                   data: {
                     source: interNode.id(),
                     target: target.id()
@@ -457,16 +465,22 @@
                 break;
               
               case 'flat':
-                var edge = cy.add($.extend( true, {
-                  group: 'edges',
-                  data: {
-                    source: source.id(),
-                    target: target.id()
-                  }
-                }, options().edgeParams(source, target, 0) )).addClass(classes);
+                /*var newEdge = {group: 'edges',
+                                data: {
+                                  label: '', //change label here to add relationship name
+                                  source: source.id(),
+                                  target: target.id()
+                                }
+                              }
+
+
+                //Do not create the new edge here. Handle edge creation in EdgeBuilder.js
+                var edge = cy.add($.extend( true, 
+                                            newEdge, 
+                                            options().edgeParams(source, target, 0) )).addClass(classes);
               
                 added = added.add( edge );
-              
+                */
                 break;
 
               default:
@@ -474,9 +488,9 @@
                 break; // don't add anything
               }
             }
-            
+
             if( !preview ){
-              options().complete( source, targets, added );
+              options().complete( source, targets, newEdge );
               source.trigger('cyedgehandles.complete'); 
             }
           }
@@ -815,8 +829,8 @@
                 if( !isLoop || (isLoop && loopAllowed) ){             
                   makeEdges(false, source, target);
 
-                  //options().complete( node );
-                  //node.trigger('cyedgehandles.complete'); 
+                  options().complete( node );
+                  node.trigger('cyedgehandles.complete'); 
                 }
 
                 inForceStart = false; // now we're done so reset the flag
@@ -1027,8 +1041,8 @@
     });
   }
 
-  if( $ && $$ ){ // expose to global cytoscape (i.e. window.cytoscape)
-    register( $$, $ );
+  if( typeof cytoscape !== 'undefined' ){ // expose to global cytoscape (i.e. window.cytoscape)
+    register( cytoscape, $ );
   }
 
-})( cytoscape, jQuery );
+})( jQuery );
