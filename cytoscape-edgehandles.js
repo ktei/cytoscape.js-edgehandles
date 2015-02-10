@@ -98,11 +98,15 @@
         },
 
         disable: function(){
-          return functions.option.apply(this, ['enabled', false]);
+          if(!this.disabled()){
+            return functions.option.apply(this, ['enabled', false]);
+          }
         },
 
         enable: function(){
-          return functions.option.apply(this, ['enabled', true]);
+          if(!this.enabled()){
+            return functions.option.apply(this, ['enabled', true]);
+          }          
         },
           
         resize: function(){
@@ -465,22 +469,23 @@
                 break;
               
               case 'flat':
-                /*var newEdge = {group: 'edges',
-                                data: {
-                                  label: '', //change label here to add relationship name
-                                  source: source.id(),
-                                  target: target.id()
-                                }
-                              }
+                // var newEdge = {group: 'edges',
+                //                 data: {
+                //                   label: '', //change label here to add relationship name
+                //                   source: source.id(),
+                //                   target: target.id()
+                //                 }
+                //               }
 
 
-                //Do not create the new edge here. Handle edge creation in EdgeBuilder.js
-                var edge = cy.add($.extend( true, 
-                                            newEdge, 
-                                            options().edgeParams(source, target, 0) )).addClass(classes);
+                // //Do not create the new edge here. Handle edge creation in EdgeBuilder.js
+                // var edge = cy.add($.extend( true, 
+                //                             newEdge, 
+                //                             options().edgeParams(source, target, 0) )).addClass(classes);
               
-                added = added.add( edge );
-                */
+                // added = added.add( edge );
+                // console.log(edge);
+                
                 break;
 
               default:
@@ -491,6 +496,7 @@
 
             if( !preview ){
               options().complete( source, targets, newEdge );
+              //console.log(newEdge);
               source.trigger('cyedgehandles.complete'); 
             }
           }
