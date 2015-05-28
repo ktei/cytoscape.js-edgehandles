@@ -888,7 +888,7 @@
 
                 if (e.cy.nodes('.edgehandles-source').length === 0) {
                   var node = sourceNode = this;
-                  console.log('set sourceNode', sourceNode);
+                  // console.log('set sourceNode', sourceNode);
                   var source = node;
 
                   lastActiveId = node.id();
