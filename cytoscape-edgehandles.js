@@ -49,6 +49,9 @@
       },
       stop: function( sourceNode ){
         // fired when edgehandles interaction is stopped (either complete with added edges or incomplete)
+      },
+      revealComplete: function(sourceNode, targetNode) {
+
       }
     };
     
@@ -956,7 +959,8 @@
                   var sourceNode = e.cy.nodes('.edgehandles-source')[0];
                   var targetNode = e.cy.nodes('.edgehandles-target')[0];
                   if (sourceNode.id() != targetNode.id()) {
-                    options().complete(sourceNode, targetNode);
+                    // options().complete(sourceNode, targetNode);
+                    options().revealComplete(sourceNode, targetNode);
                   }
                   drawMode = false;
                   resetToDefaultState();
