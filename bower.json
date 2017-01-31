@@ -1,6 +1,5 @@
 {
   "name": "cytoscape-edgehandles",
-  "version": "2.0.0",
   "description": "Edge creation extension for Cytoscape.js",
   "main": "cytoscape-edgehandles.js",
   "repository": {
@@ -18,5 +17,8 @@
     "cytoscape",
     "cyext"
   ],
-  "license": "LGPL3+"
+  "license": "MIT",
+  "dependencies": {
+    "cytoscape": "^2.2.8"
+  }
 }
