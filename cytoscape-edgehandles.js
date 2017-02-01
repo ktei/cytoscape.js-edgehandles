@@ -444,14 +444,22 @@ SOFTWARE.
       start: function( sourceNode ) {
         // fired when edgehandles interaction starts (drag on handle)
       },
+      finishing: function( sourceNode, targetNode, creatingEdge ){
+        // CUSTOM!
+        //Fired just before the edge is created and cytoscape updates.
+      },
       complete: function( sourceNode, targetNodes, addedEntities ) {
         // fired when edgehandles is done and entities are added
+        console.log('AAAAAAAAAAAAAAAAAAA');
       },
       stop: function( sourceNode ) {
         // fired when edgehandles interaction is stopped (either complete with added edges or incomplete)
-      }, 
-      cancel: function( sourceNode, renderedPosition ) {
+      },
+      cancel: function( sourceNode, renderedPosition ) {
         // fired when edgehandles are cancelled ( incomplete - nothing has been added ) - renderedPosition is where the edgehandle was released
+      },
+      revealComplete: function(sourceNode, targetNode) {
+
       }
     };
 
@@ -503,11 +511,15 @@ SOFTWARE.
         },
 
         disable: function() {
-          return functions.option.apply( this, [ 'enabled', false ] );
+          if (!this.disabled()) {
+            return functions.option.apply( this, [ 'enabled', false ] );
+          }
         },
 
         enable: function() {
-          return functions.option.apply( this, [ 'enabled', true ] );
+          if(!this.enabled()){
+            return functions.option.apply(this, ['enabled', true]);
+          }
         },
 
         resize: function() {
@@ -522,6 +534,10 @@ SOFTWARE.
 
         drawoff: function() {
           $( this ).trigger( 'cyedgehandles.drawoff' );
+        },
+
+        clear: function() {
+          $(this).trigger('cyedgehandles.clear');
         },
 
         init: function() {
@@ -543,11 +559,13 @@ SOFTWARE.
           var ghostEdge;
           var sourceNode;
           var drawMode = false;
+
           cy.on( 'resize', function() {
             $container.trigger( 'cyedgehandles.resize' );
           });
 
           $container.append( $canvas );
+          window.sourceNode = sourceNode;
 
           var _sizeCanvas = debounce( function(){
             $canvas
@@ -1103,8 +1121,8 @@ SOFTWARE.
                 var x = pageX - $container.offset().left;
                 var y = pageY - $container.offset().top;
 
-                mx = x; 
-                my = y; 
+                mx = x;
+                my = y;
 
                 if( options().handleLineType !== 'ghost' ) {
                   clearDraws();
@@ -1121,7 +1139,8 @@ SOFTWARE.
               lastMdownHandler = mdownHandler;
 
 
-            } ).on( 'mouseover tapdragover', 'node', hoverHandler = function() {
+            } ).on( 'mouseover tap', 'node', hoverHandler = function( e ) {
+              //debugger;
               var node = this;
               var target = this;
 
@@ -1191,8 +1210,8 @@ SOFTWARE.
 
               lastActiveId = node.id();
 
-              node.trigger( 'cyedgehandles.start' );
               node.addClass( 'edgehandles-source' );
+              node.trigger( 'cyedgehandles.start' );
 
               var p = node.renderedPosition();
               var h = node.renderedOuterHeight();
@@ -1225,8 +1244,8 @@ SOFTWARE.
                     var x = ( me.pageX !== undefined ? me.pageX : me.touches[ 0 ].pageX ) - $container.offset().left;
                     var y = ( me.pageY !== undefined ? me.pageY : me.touches[ 0 ].pageY ) - $container.offset().top;
 
-                    mx = x; 
-                    my = y; 
+                    mx = x;
+                    my = y;
 
                     if( options().handleLineType !== 'ghost' ) {
                       clearDraws();
@@ -1389,11 +1408,15 @@ SOFTWARE.
 
                 makeEdges();
 
-                if( sourceNode ) {
+                debugger;
+                if( sourceNode && this.nodes('.edgehandles-target').length > 0) {
+                  var targetNode = e.cy.nodes('.edgehandles-target')[0];
+
                   options().stop( sourceNode );
                   sourceNode.trigger( 'cyedgehandles.stop' );
 
-                  options().complete( sourceNode );
+                  //options().complete( sourceNode );
+                  options().revealComplete(sourceNode, targetNode);
                 }
 
                 resetToDefaultState();
