@@ -753,47 +753,47 @@ SOFTWARE.
             switch( options().handleLineType ) {
               case 'ghost':
                 //debugger;
-                if( !ghostNode || ghostNode.removed() ) {
+            case 'ghost':
 
-                  drawHandle(hx, hy, hr);
+              if( !ghostNode || ghostNode.removed() ){
 
-                  ghostNode = cy.add( {
-                    group: 'nodes',
-                    classes: 'edgehandles-ghost edgehandles-ghost-node',
-                    css: {
-                      'background-color': 'blue',
-                      'width': 0.0001,
-                      'height': 0.0001,
-                      'opacity': 0,
-                      'events': 'no'
-                    },
-                    position: {
-                      x: 0,
-                      y: 0
-                    }
-                  } );
+                drawHandle();
 
-                  ghostEdge = cy.add( {
-                    group: 'edges',
-                    classes: 'edgehandles-ghost edgehandles-ghost-edge',
-                    data: {
-                      source: sourceNode.id(),
-                      target: ghostNode.id()
-                    },
-                    css: {
-                      'events': 'no'
-                    }
-                  } );
+                ghostNode = cy.add({
+                  group: 'nodes',
+                  classes: 'edgehandles-ghost edgehandles-ghost-node',
+                  css: {
+                    'background-color': 'blue',
+                     //Set the background image so that it does not conflict with the Stylesheet.js CSS
+                    'background-image': '/Images/Reveal/node-person.png',
+                    'width': 0.0001,
+                    'height': 0.0001,
+                    'opacity': 0
+                  },
+                  position: {
+                    x: 0,
+                    y: 0
+                  }
+                });
 
-                }
+                ghostEdge = cy.add({
+                  group: 'edges',
+                  classes: 'edgehandles-ghost edgehandles-ghost-edge',
+                  data: {
+                    source: sourceNode.id(),
+                    target: ghostNode.id()
+                  }
+                });
 
-                ghostNode.renderedPosition( {
-                  x: x,
-                  y: y
-                } );
+              }
+
+              ghostNode.renderedPosition({
+                x: x,
+                y: y
+              });
 
 
-                break;
+              break;
 
               case 'straight':
 
@@ -1407,7 +1407,6 @@ SOFTWARE.
 
                 makeEdges();
 
-                debugger;
                 if( sourceNode && this.nodes('.edgehandles-target').length > 0) {
                   var targetNode = e.cy.nodes('.edgehandles-target')[0];
 
