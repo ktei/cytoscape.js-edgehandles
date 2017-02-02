@@ -450,7 +450,6 @@ SOFTWARE.
       },
       complete: function( sourceNode, targetNodes, addedEntities ) {
         // fired when edgehandles is done and entities are added
-        console.log('AAAAAAAAAAAAAAAAAAA');
       },
       stop: function( sourceNode ) {
         // fired when edgehandles interaction is stopped (either complete with added edges or incomplete)
@@ -753,10 +752,10 @@ SOFTWARE.
             // draw line based on type
             switch( options().handleLineType ) {
               case 'ghost':
-
+                //debugger;
                 if( !ghostNode || ghostNode.removed() ) {
 
-                  drawHandle();
+                  drawHandle(hx, hy, hr);
 
                   ghostNode = cy.add( {
                     group: 'nodes',
@@ -914,15 +913,15 @@ SOFTWARE.
                   break;
 
                 case 'flat':
-                  var edge = cy.add( Object.assign( {
-                    group: 'edges',
-                    data: {
-                      source: source.id(),
-                      target: target.id()
-                    }
-                  }, options().edgeParams( source, target, 0 ) ) ).addClass( classes );
+                  // var edge = cy.add( Object.assign( {
+                  //   group: 'edges',
+                  //   data: {
+                  //     source: source.id(),
+                  //     target: target.id()
+                  //   }
+                  // }, options().edgeParams( source, target, 0 ) ) ).addClass( classes );
 
-                  added = added.add( edge );
+                  // added = added.add( edge );
 
                   break;
 
@@ -1419,6 +1418,7 @@ SOFTWARE.
                   options().revealComplete(sourceNode, targetNode);
                 }
 
+                drawMode = false;
                 resetToDefaultState();
               }
 
