@@ -752,48 +752,46 @@ SOFTWARE.
             // draw line based on type
             switch( options().handleLineType ) {
               case 'ghost':
-                //debugger;
-            case 'ghost':
 
-              if( !ghostNode || ghostNode.removed() ){
+                if( !ghostNode || ghostNode.removed() ){
 
-                drawHandle();
+                  drawHandle();
 
-                ghostNode = cy.add({
-                  group: 'nodes',
-                  classes: 'edgehandles-ghost edgehandles-ghost-node',
-                  css: {
-                    'background-color': 'blue',
-                     //Set the background image so that it does not conflict with the Stylesheet.js CSS
-                    'background-image': '/Images/Reveal/node-person.png',
-                    'width': 0.0001,
-                    'height': 0.0001,
-                    'opacity': 0
-                  },
-                  position: {
-                    x: 0,
-                    y: 0
-                  }
+                  ghostNode = cy.add({
+                    group: 'nodes',
+                    classes: 'edgehandles-ghost edgehandles-ghost-node',
+                    css: {
+                      'background-color': 'blue',
+                      //Set the background image so that it does not conflict with the Stylesheet.js CSS
+                      'background-image': '/Images/Reveal/node-person.png',
+                      'width': 0.0001,
+                      'height': 0.0001,
+                      'opacity': 0
+                    },
+                    position: {
+                      x: 0,
+                      y: 0
+                    }
+                  });
+
+                  ghostEdge = cy.add({
+                    group: 'edges',
+                    classes: 'edgehandles-ghost edgehandles-ghost-edge',
+                    data: {
+                      source: sourceNode.id(),
+                      target: ghostNode.id()
+                    }
+                  });
+
+                }
+
+                ghostNode.renderedPosition({
+                  x: x,
+                  y: y
                 });
 
-                ghostEdge = cy.add({
-                  group: 'edges',
-                  classes: 'edgehandles-ghost edgehandles-ghost-edge',
-                  data: {
-                    source: sourceNode.id(),
-                    target: ghostNode.id()
-                  }
-                });
 
-              }
-
-              ghostNode.renderedPosition({
-                x: x,
-                y: y
-              });
-
-
-              break;
+                break;
 
               case 'straight':
 
@@ -1300,8 +1298,8 @@ SOFTWARE.
                 if( !isLoop || ( isLoop && loopAllowed ) ) {
                   makeEdges( false, source, target );
 
-                  //options().complete( node );
-                  //node.trigger('cyedgehandles.complete');
+                  options().complete( node );
+                  node.trigger('cyedgehandles.complete');
                 }
 
                 inForceStart = false; // now we're done so reset the flag
@@ -1340,28 +1338,30 @@ SOFTWARE.
 
                 clearDraws(); // clear just in case
 
-                var node = sourceNode = this;
-                var source = node;
+                if (e.cy.nodes('.edgehandles-source').length === 0) {
+                  var node = sourceNode = this;
+                  var source = node;
 
-                lastActiveId = node.id();
+                  lastActiveId = node.id();
 
-                node.trigger( 'cyedgehandles.start' );
-                node.addClass( 'edgehandles-source' );
+                  node.trigger( 'cyedgehandles.start' );
+                  node.addClass( 'edgehandles-source' );
 
-                var p = node.renderedPosition();
-                var h = node.renderedOuterHeight();
-                var w = node.renderedOuterWidth();
+                  var p = node.renderedPosition();
+                  var h = node.renderedOuterHeight();
+                  var w = node.renderedOuterWidth();
 
-                hr = options().handleSize / 2 * cy.zoom();
-                hx = p.x;
-                hy = p.y - h / 2 - hr / 2;
+                  hr = options().handleSize / 2 * cy.zoom();
+                  hx = p.x;
+                  hy = p.y - h / 2 - hr / 2;
 
-                drawHandle( hx, hy, hr );
+                  drawHandle( hx, hy, hr );
 
-                node.trigger( 'cyedgehandles.showhandle' );
+                  node.trigger( 'cyedgehandles.showhandle' );
 
-                options().start( node );
-                node.trigger( 'cyedgehandles.start' );
+                  options().start( node );
+                  node.trigger( 'cyedgehandles.start' );
+                }
               }
 
 
@@ -1403,22 +1403,27 @@ SOFTWARE.
               var cxtOk = options().cxt && e.type === 'cxttapend';
               var tapOk = drawMode && e.type === 'tapend';
 
-              if( cxtOk || tapOk ) {
+              if( cxtOk || tapOk ){
 
                 makeEdges();
-
-                if( sourceNode && this.nodes('.edgehandles-target').length > 0) {
+                if (e.cy.nodes('.edgehandles-source').length > 0 && e.cy.nodes('.edgehandles-target').length > 0) {
+                  var sourceNode = e.cy.nodes('.edgehandles-source')[0];
                   var targetNode = e.cy.nodes('.edgehandles-target')[0];
-
-                  options().stop( sourceNode );
-                  sourceNode.trigger( 'cyedgehandles.stop' );
-
-                  //options().complete( sourceNode );
-                  options().revealComplete(sourceNode, targetNode);
+                  if (sourceNode.id() != targetNode.id()) {
+                    // options().complete(sourceNode, targetNode);
+                    options().revealComplete(sourceNode, targetNode);
+                  }
+                  drawMode = false;
+                  resetToDefaultState();
                 }
+                // resetToDefaultState();
 
-                drawMode = false;
-                resetToDefaultState();
+                // if( sourceNode ){
+                //   options().stop( sourceNode );
+                //   node.trigger('cyedgehandles.stop');
+
+                //   options().complete( sourceNode );
+                // }
               }
 
             } ).on( 'tap', 'node', tapToStartHandler = function() {
